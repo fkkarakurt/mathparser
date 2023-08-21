@@ -1,3 +1,11 @@
+/**
+ * @file parser.cpp
+ * @author Fatih Küçükkarakurt (https://github.com/fkkarakurt)
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "parser.h"
 
 std::vector<std::string> Parser::tokenize(const std::string &expression)
@@ -11,11 +19,13 @@ std::vector<std::string> Parser::tokenize(const std::string &expression)
 
         if (ch == '-')
         {
-            // Eğer "-" işareti ifadenin başında veya bir operatörden hemen sonra geliyorsa bu bir negatif sayıdır.
+            // If the "-" sign comes at the beginning of the expression or immediately after an operator, it is a negative number.
             if (i == 0 || tokens.back() == "+" || tokens.back() == "-" || tokens.back() == "*" || tokens.back() == "/" || tokens.back() == "^" || tokens.back() == "(")
             {
                 currentToken += ch;
-                continue; // Döngünün geri kalanını atla
+
+                // Skip the rest of the loop
+                continue;
             }
         }
 
@@ -24,7 +34,9 @@ std::vector<std::string> Parser::tokenize(const std::string &expression)
             expression.substr(i, 4) == "sech" || expression.substr(i, 4) == "csch")
         {
             tokens.push_back(expression.substr(i, 4));
-            i += 3; // 4 karakteri atla
+
+            // skip 4 characters
+            i += 3;
             continue;
         }
 
@@ -32,7 +44,9 @@ std::vector<std::string> Parser::tokenize(const std::string &expression)
             expression.substr(i, 3) == "tan" || expression.substr(i, 3) == "cot")
         {
             tokens.push_back(expression.substr(i, 3));
-            i += 2; // 3 karakteri atla
+
+            // skip 3 characters
+            i += 2;
             continue;
         }
 
@@ -61,18 +75,24 @@ std::vector<std::string> Parser::tokenize(const std::string &expression)
         else if (i + 1 < expression.size() && expression.substr(i, 2) == "ln")
         {
             tokens.push_back("ln");
-            i += 1; // 'ln' iki karakter uzunluğunda olduğu için ekstra bir artış yapalım.
+
+            // Since 'ln' is two characters long, an extra increment.
+            i += 1;
         }
         else if (i + 2 < expression.size() && expression.substr(i, 3) == "log")
         {
             tokens.push_back("log");
-            i += 2; // 'log' üç karakter uzunluğunda olduğu için ekstra bir artış yapalım.
+
+            // An extra increment since 'log' is three characters long.
+            i += 2;
         }
 
         else if (i + 3 < expression.size() && expression.substr(i, 4) == "sqrt")
         {
             tokens.push_back("sqrt");
-            i += 3; // 'sqrt' dört karakter uzunluğunda olduğu için ekstra bir artış yapalım.
+
+            // Since 'sqrt' is four characters long, an extra increment.
+            i += 3;
         }
 
         else if (ch == '!')
@@ -87,12 +107,12 @@ std::vector<std::string> Parser::tokenize(const std::string &expression)
 
         else
         {
-            std::cerr << "Bilinmeyen karakter: " << ch << std::endl;
+            std::cerr << "Unknown character: " << ch << std::endl;
             exit(1);
         }
     }
 
-    // Son tokeni ekleyin
+    // Add the last token
     if (!currentToken.empty())
     {
         tokens.push_back(currentToken);
@@ -111,20 +131,20 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         std::cout << "Toke: " << token << std::endl;
         if (isdigit(token[0]) || (token[0] == '-' && token.size() > 1))
         {
-            // Sayı tokeni (negatif sayılar için ek kontrol)
+            // Number token (additional check for negative numbers)
             nodeStack.push_back(std::make_shared<ConstantNode>(std::stod(token)));
         }
         else if (token == "+" || token == "-" || token == "*" || token == "/")
         {
             if (nodeStack.size() < 1 || i == tokens.size() - 1)
             {
-                std::cerr << "Hatalı ifade: Yeterli sayıda operand yok." << std::endl;
+                std::cerr << "Incorrect statement: There are not enough operands. " << std::endl;
                 exit(1);
             }
             NodePtr left = nodeStack.back();
             nodeStack.pop_back();
 
-            // Sonraki tokeni işle
+            // Process next token
             i++;
             NodePtr right;
             if (isdigit(tokens[i][0]) || tokens[i][0] == '-')
@@ -133,7 +153,8 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
             }
             else if (tokens[i] == "(")
             {
-                int balance = 1; // Parantez dengesi
+                // bracket balance
+                int balance = 1;
                 size_t j = i + 1;
                 for (; j < tokens.size() && balance != 0; ++j)
                 {
@@ -152,7 +173,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
             }
             else
             {
-                std::cerr << "Hatalı ifade: Beklenmeyen token: " << tokens[i] << std::endl;
+                std::cerr << "Incorrect statement: Unexpected token: " << tokens[i] << std::endl;
                 exit(1);
             }
 
@@ -194,7 +215,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
             if (balance != 0)
             {
-                std::cerr << "Hatalı ifade: Parantezler dengeli değil." << std::endl;
+                std::cerr << "Incorrect statement: The parentheses are not balanced." << std::endl;
                 exit(1);
             }
 
@@ -207,13 +228,13 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         {
             if (nodeStack.size() < 1 || i == tokens.size() - 1)
             {
-                std::cerr << "Hatalı ifade: Yeterli sayıda operand yok." << std::endl;
+                std::cerr << "Incorrect statement: There are not enough operands." << std::endl;
                 exit(1);
             }
             NodePtr base = nodeStack.back();
             nodeStack.pop_back();
 
-            // Sonraki tokeni işle
+            // Process next token
             i++;
             NodePtr exponent;
             if (isdigit(tokens[i][0]) || tokens[i][0] == '-' || tokens[i] == "(")
@@ -222,7 +243,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
             }
             else
             {
-                std::cerr << "Hatalı ifade: Beklenmeyen token: " << tokens[i] << std::endl;
+                std::cerr << "Incorrect statement: Unexpected token:" << tokens[i] << std::endl;
                 exit(1);
             }
 
@@ -233,11 +254,12 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         {
             if (i == tokens.size() - 1 || tokens[i + 1] != "(")
             {
-                std::cerr << "Hatalı ifade: Trigonometrik fonksiyon için parantez eksik." << std::endl;
+                std::cerr << "Incorrect statement: Parenthesis is missing for trigonometric function." << std::endl;
                 exit(1);
             }
 
-            int balance = 1; // Parantez dengesi
+            // bracket balance
+            int balance = 1;
             size_t j = i + 2;
             for (; j < tokens.size() && balance != 0; ++j)
             {
@@ -253,7 +275,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
             if (balance != 0)
             {
-                std::cerr << "Hatalı ifade: Parantezler dengeli değil." << std::endl;
+                std::cerr << "Incorrect statement: The parentheses are not balanced." << std::endl;
                 exit(1);
             }
 
@@ -279,13 +301,15 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
             }
 
             nodeStack.push_back(trigNode);
-            i = j - 1; // Trigonometrik ifadenin sonuna atla
+
+            // Jump to end of trigonometric expression
+            i = j - 1;
         }
         else if (token == "ln" || token == "log")
         {
             if (i == tokens.size() - 1)
             {
-                std::cerr << "Hatalı ifade: Logaritmik işlev için operand eksik." << std::endl;
+                std::cerr << "Incorrect statement: The operand for the logarithmic function is missing." << std::endl;
                 exit(1);
             }
 
@@ -308,7 +332,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
                 if (balance != 0)
                 {
-                    std::cerr << "Hatalı ifade: Parantezler dengeli değil." << std::endl;
+                    std::cerr << "Incorrect statement: The parentheses are not balanced." << std::endl;
                     exit(1);
                 }
 
@@ -338,7 +362,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         {
             if (i == tokens.size() - 1)
             {
-                std::cerr << "Hatalı ifade: Karekök işlevi için operand eksik." << std::endl;
+                std::cerr << "Incorrect statement: The operand for the square root function is missing." << std::endl;
                 exit(1);
             }
 
@@ -361,7 +385,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
                 if (balance != 0)
                 {
-                    std::cerr << "Hatalı ifade: Parantezler dengeli değil." << std::endl;
+                    std::cerr << "Incorrect statement: The parentheses are not balanced." << std::endl;
                     exit(1);
                 }
 
@@ -382,20 +406,21 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         {
             if (nodeStack.size() < 1 || i == tokens.size() - 1)
             {
-                std::cerr << "Hatalı ifade: Yeterli sayıda operand yok." << std::endl;
+                std::cerr << "Incorrect statement: There are not enough operands." << std::endl;
                 exit(1);
             }
 
             NodePtr base = nodeStack.back();
             nodeStack.pop_back();
 
-            // Sonraki tokeni işle
+            // Process next token
             i++;
             NodePtr exponent;
 
             if (tokens[i] == "(")
             {
-                int balance = 1; // Parantez dengesi
+                // bracket balance
+                int balance = 1;
                 size_t j = i + 1;
                 for (; j < tokens.size() && balance != 0; ++j)
                 {
@@ -411,7 +436,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
                 if (balance != 0)
                 {
-                    std::cerr << "Hatalı ifade: Parantezler dengeli değil." << std::endl;
+                    std::cerr << "Incorrect statement: The parentheses are not balanced." << std::endl;
                     exit(1);
                 }
 
@@ -431,11 +456,12 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         {
             if (i == tokens.size() - 1 || tokens[i + 1] != "(")
             {
-                std::cerr << "Hatalı ifade: Hiperbolik fonksiyon için parantez eksik." << std::endl;
+                std::cerr << "Incorrect statement: Parenthesis missing for hyperbolic function." << std::endl;
                 exit(1);
             }
 
-            int balance = 1; // Parantez dengesi
+            // bracket balance
+            int balance = 1;
             size_t j = i + 2;
             for (; j < tokens.size() && balance != 0; ++j)
             {
@@ -451,7 +477,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
             if (balance != 0)
             {
-                std::cerr << "Hatalı ifade: Parantezler dengeli değil." << std::endl;
+                std::cerr << "Incorrect statement: The parentheses are not balanced." << std::endl;
                 exit(1);
             }
 
@@ -485,13 +511,15 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
             }
 
             nodeStack.push_back(hyperbolicNode);
-            i = j - 1; // Hiperbolik ifadenin sonuna atla
+
+            // Jump to end of hyperbolic expression
+            i = j - 1;
         }
         else if (token == "!")
         {
             if (nodeStack.size() < 1)
             {
-                std::cerr << "Hatalı ifade: Yeterli sayıda operand yok." << std::endl;
+                std::cerr << "Incorrect statement: There are not enough operands." << std::endl;
                 exit(1);
             }
 
@@ -502,7 +530,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
         }
         else
         {
-            std::cerr << "Bilinmeyen token: " << token << std::endl;
+            std::cerr << "Unknown token: " << token << std::endl;
             exit(1);
         }
 
@@ -511,7 +539,7 @@ NodePtr Parser::buildTree(const std::vector<std::string> &tokens)
 
     if (nodeStack.size() != 1)
     {
-        std::cerr << "Hatalı ifade: Yeterli sayıda operatör yok." << std::endl;
+        std::cerr << "Incorrect statement: Not enough operators." << std::endl;
         exit(1);
     }
 

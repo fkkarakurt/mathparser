@@ -1,41 +1,49 @@
+/**
+ * @file expression_tree.cpp
+ * @author Fatih Küçükkarakurt (https://github.com/fkkarakurt)
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "expression_tree.h"
 
-// ConstantNode implementasyonu
+// ConstantNode implementation
 ConstantNode::ConstantNode(double value) : value_(value) {}
 double ConstantNode::evaluate() const
 {
     return value_;
 }
 
-// AdditionNode implementasyonu
+// AdditionNode implementation
 AdditionNode::AdditionNode(NodePtr left, NodePtr right) : left_(left), right_(right) {}
 double AdditionNode::evaluate() const
 {
     return left_->evaluate() + right_->evaluate();
 }
 
-// SubtractionNode implementasyonu
+// SubtractionNode implementation
 SubtractionNode::SubtractionNode(NodePtr left, NodePtr right) : left_(left), right_(right) {}
 double SubtractionNode::evaluate() const
 {
     return left_->evaluate() - right_->evaluate();
 }
 
-// MultiplicationNode implementasyonu
+// MultiplicationNode implementation
 MultiplicationNode::MultiplicationNode(NodePtr left, NodePtr right) : left_(left), right_(right) {}
 double MultiplicationNode::evaluate() const
 {
     return left_->evaluate() * right_->evaluate();
 }
 
-// DivisionNode implementasyonu
+// DivisionNode implementation
 DivisionNode::DivisionNode(NodePtr left, NodePtr right) : left_(left), right_(right) {}
 double DivisionNode::evaluate() const
 {
     double denominator = right_->evaluate();
     if (denominator == 0.0)
     {
-        std::cerr << "Hata: 0'a bölme." << std::endl;
+        std::cerr << "Error: division by 0." << std::endl;
         exit(1);
     }
     return left_->evaluate() / denominator;
@@ -63,7 +71,7 @@ double CotNode::evaluate() const
     double tanValue = std::tan(operand_->evaluate());
     if (tanValue == 0.0)
     {
-        std::cerr << "Hata: Tan değeri 0." << std::endl;
+        std::cerr << "Error: Tan value is 0." << std::endl;
         exit(1);
     }
     return 1.0 / tanValue;
@@ -84,7 +92,7 @@ double SqrtNode::evaluate() const
     double value = operand_->evaluate();
     if (value < 0.0)
     {
-        std::cerr << "Hata: Negatif bir sayının karekökü alınamaz." << std::endl;
+        std::cerr << "Error: The square root of a negative number cannot be taken." << std::endl;
         exit(1);
     }
     return std::sqrt(value);

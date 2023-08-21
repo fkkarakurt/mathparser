@@ -1,3 +1,11 @@
+/**
+ * @file parser.h
+ * @author Fatih Küçükkarakurt (https://github.com/fkkarakurt)
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef PARSER_H
 #define PARSER_H
 
@@ -7,14 +15,14 @@
 class Parser
 {
 public:
-    // İfadeyi ayrıştırır ve bir ifade ağacı döndürür
+    // Parses the expression and returns an expression tree
     NodePtr parse(const std::string &expression);
 
 private:
-    // İfadeyi tokenlara ayırır
+    // Splits the expression into tokens
     std::vector<std::string> tokenize(const std::string &expression);
 
-    // Tokenlerden bir ifade ağacı oluşturur
+    // Creates an expression tree from tokens
     NodePtr buildTree(const std::vector<std::string> &tokens);
 };
 

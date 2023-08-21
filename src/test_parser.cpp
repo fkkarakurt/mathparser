@@ -1,3 +1,11 @@
+/**
+ * @file test_parser.cpp
+ * @author Fatih Küçükkarakurt (https://github.com/fkkarakurt)
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "parser.h"
 #include <iostream>
 

@@ -1,3 +1,11 @@
+/**
+ * @file expression_tree.h
+ * @author Fatih Küçükkarakurt (https://github.com/fkkarakurt)
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef EXPRESSION_TREE_H
 #define EXPRESSION_TREE_H
 
@@ -5,12 +13,14 @@
 #include <iostream>
 #include <cmath>
 
-// Temel düğüm sınıfı
+// base node class
 class Node
 {
 public:
     virtual ~Node() = default;
-    virtual double evaluate() const = 0; // Bu düğümün değerini hesaplar
+
+    // Calculates the value of this node
+    virtual double evaluate() const = 0;
 };
 
 using NodePtr = std::shared_ptr<Node>;
@@ -25,7 +35,7 @@ protected:
     NodePtr operand_;
 };
 
-// Sabit değerleri temsil eden düğüm
+// Node representing constant values
 class ConstantNode : public Node
 {
 public:
@@ -36,7 +46,7 @@ private:
     double value_;
 };
 
-// İki alt düğüm arasında toplama işlemi yapan düğüm
+// Node performing aggregation between two child nodes
 class AdditionNode : public Node
 {
 public:
@@ -48,7 +58,7 @@ private:
     NodePtr right_;
 };
 
-// İki alt düğüm arasında çıkarma işlemi yapan düğüm
+// Node performing subtraction between two child nodes
 class SubtractionNode : public Node
 {
 public:
@@ -60,7 +70,7 @@ private:
     NodePtr right_;
 };
 
-// İki alt düğüm arasında çarpma işlemi yapan düğüm
+// Node performing multiplication between two child nodes
 class MultiplicationNode : public Node
 {
 public:
@@ -72,7 +82,7 @@ private:
     NodePtr right_;
 };
 
-// İki alt düğüm arasında bölme işlemi yapan düğüm
+// Node that performs division between two child nodes
 class DivisionNode : public Node
 {
 public:
@@ -208,7 +218,9 @@ public:
         {
             return 1 / tanhVal;
         }
-        return HUGE_VAL; // Infinity for division by zero
+
+        // Infinity for division by zero
+        return HUGE_VAL;
     }
 };
 
@@ -235,7 +247,9 @@ public:
         {
             return 1 / sinhVal;
         }
-        return HUGE_VAL; // Infinity for division by zero
+
+        // Infinity for division by zero
+        return HUGE_VAL;
     }
 };
 
@@ -248,7 +262,7 @@ public:
     {
         int n = static_cast<int>(operand_->evaluate());
         if (n < 0)
-            throw std::runtime_error("Negatif faktöriyel hesaplanamaz");
+            throw std::runtime_error("Negative factorial cannot be calculated");
         return factorial(n);
     }
 
