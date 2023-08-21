@@ -6,8 +6,8 @@
  *
  */
 
-#include "parser.h"
 #include <iostream>
+#include "parser.h"
 
 int main()
 {
