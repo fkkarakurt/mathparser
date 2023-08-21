@@ -1,0 +1,1 @@
+g++ expression_tree.cpp math_module.cpp parser.cpp test_parser.cpp -o Test
